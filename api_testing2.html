@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+        }
+        .registration-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .error-message {
+            color: red;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="registration-container">
+            <h2 class="text-center mb-4">User Registration</h2>
+            <form id="registrationForm">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" required minlength="4" maxlength="20">
+                    <div id="usernameError" class="error-message"></div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" r>
+                    <div id="emailError" class="error-message"></div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required minlen>
+                    <div id="passwordError" class="error-message"></div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                    <div id="confirmPasswordError" class="error-message"></div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="age" class="form-label">Age</label>
+                    <input type="number" class="form-control" id="age" name="age" required min="18" max="100">
+                    <div id="ageError" class="error-message"></div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100" id="submitBtn">Register</button>
+            </form>
+        </div>
+    </div>
+    <div class="modal fade" id="successModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registration Successful</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Your account has been created successfully!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // DOM Elements
+        const form = document.getElementById('registrationForm');
+        const usernameInput = document.getElementById('username');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const ageInput = document.getElementById('age');
+        
+        // Error Display Elements
+        const usernameError = document.getElementById('usernameError');
+        const emailError = document.getElementById('emailError');
+        const passwordError = document.getElementById('passwordError');
+        const confirmPasswordError = document.getElementById('confirmPasswordError');
+        const ageError = document.getElementById('ageError');
+        
+        // Success Modal
+        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+
+        // Validation Functions
+        function validateUsername() {
+            const username = usernameInput.value.trim();
+            if (username.length < 4) {
+                usernameError.textContent = 'Username must be at least 4 characters long';
+                return false;
+            }
+            usernameError.textContent = '';
+            return true;
+        }
+
+        function validateEmail() {
+            const email = emailInput.value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                emailError.textContent = 'Please enter a valid email address';
+                return false;
+            }
+            emailError.textContent = '';
+            return true;
+        }
+
+        function validatePassword() {
+            const password = passwordInput.value;
+            if (password.length < 8) {
+                passwordError.textContent = 'Password must be at least 8 characters long';
+                return false;
+            }
+            passwordError.textContent = '';
+            return true;
+        }
+
+        function validateConfirmPassword() {
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            if (password !== confirmPassword) {
+                confirmPasswordError.textContent = 'Passwords do not match';
+                return false;
+            }
+            confirmPasswordError.textContent = '';
+            return true;
+        }
+
+        function validateAge() {
+            const age = parseInt(ageInput.value);
+            if (isNaN(age) || age < 18 || age > 100) {
+                ageError.textContent = 'Age must be between 18 and 100';
+                return false;
+            }
+            ageError.textContent = '';
+            return true;
+        }
+
+        // Real-time Validation Event Listeners
+        usernameInput.addEventListener('input', validateUsername);
+        emailInput.addEventListener('input', validateEmail);
+        passwordInput.addEventListener('input', validatePassword);
+        confirmPasswordInput.addEventListener('input', validateConfirmPassword);
+        ageInput.addEventListener('input', validateAge);
+
+        // Form Submission Handler
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Validate all fields
+            const isUsernameValid = validateUsername();
+            const isEmailValid = validateEmail();
+            const isPasswordValid = validatePassword();
+            const isConfirmPasswordValid = validateConfirmPassword();
+            const isAgeValid = validateAge();
+
+            // If all validations pass, proceed with AJAX submission
+            if (isUsernameValid && isEmailValid && 
+                isPasswordValid && isConfirmPasswordValid && isAgeValid) {
+                
+                // Prepare form data
+                const formData = {
+                    username: usernameInput.value.trim(),
+                    email: emailInput.value.trim(),
+                    password: passwordInput.value,
+                    age: parseInt(ageInput.value)
+                };
+
+                // AJAX Request
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'https://jsonplaceholder.typicode.com/users', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+
+                xhr.onload = function() {
+                    if (xhr.status === 201) {
+                        // Clear form
+                        form.reset();
+                        
+                        // Show success modal
+                        successModal.show();
+                    } else {
+                        // Handle error
+                        alert('Registration failed. Please try again.');
+                    }
+                };
+
+                xhr.onerror = function() {
+                    alert('Network error. Please check your connection.');
+                };
+
+                // Send request
+                xhr.send(JSON.stringify(formData));
+            }
+        });
+    </script>
+</body>
+</html>
