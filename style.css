@@ -1,16 +1,53 @@
-.container {
-    background-color: #ffffff;
-    height: auto;
-    display: flex;
-    position: absolute;
-    transform: translate(-50%, -50%);
-    top: 50%;
-    left: 50%;
-    box-shadow: 10px 10px 10px 10px rgba(0, 0, 0,.5);
-    border-radius: 5px;
-}
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
+    background-color: #f4f4f4;
+}
+
+.container {
+    background-color: #ffffff;
+    max-width: 800px;
+    width: 90%;
+    margin: 2rem auto;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+@media (min-width: 768px) {
+    .container {
+        width: 80%;
+        max-width: 900px;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        width: 95%;
+        margin: 1rem auto;
+        padding: 1rem;
+    }
+}
+
+/* Optional: Add some subtle styling to form elements */
+.form-control, .form-select {
+    margin-bottom: 0.75rem;
+    border-color: #ced4da;
+    transition: border-color 0.2s ease-in-out;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Responsive submit button */
+.btn-primary {
+    margin-top: 1rem;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
 }
