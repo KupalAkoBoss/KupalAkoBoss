@@ -1,64 +1,65 @@
 <?php
+// Initialize validation
 $errors = [];
 $success_message = "";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Validate and sanitize input
-    $student_number = filter_input(INPUT_POST, 'card_number');
-    $college = filter_input(INPUT_POST, 'college');
-    $course = filter_input(INPUT_POST, 'course');
-    $registration_date = filter_input(INPUT_POST, 'registration_date');
-    $first_name = filter_input(INPUT_POST, 'first_name');
-    $last_name = filter_input(INPUT_POST, 'last_name');
-    $birthday = filter_input(INPUT_POST, 'birthday');
-    $sex = filter_input(INPUT_POST, 'Sex');
-    
-    // Address fields
-    $house_number = filter_input(INPUT_POST, 'house_number');
-    $street = filter_input(INPUT_POST, 'street');
-    $city = filter_input(INPUT_POST, 'city');
-    $province = filter_input(INPUT_POST, 'province');
-    $country = filter_input(INPUT_POST, 'country');
-    $zip_code = filter_input(INPUT_POST, 'zip');
-    
-    // Combine address fields
-    $address = implode(", ", array_filter([ 
-        $house_number,
-        $street,
-        $city,
-        $province,
-        $country,
-        $zip_code
-    ]));
-    
-    // Contact fields
-    $primary_phone = filter_input(INPUT_POST, 'MainCon');
-    $secondary_phone = filter_input(INPUT_POST, 'SecCon');
-    $other_contact = filter_input(INPUT_POST, 'Other');
-    $main_email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-    $secondary_email = filter_input(INPUT_POST, 'SecE', FILTER_SANITIZE_EMAIL);
-    $primary_email = filter_input(INPUT_POST, 'PrimE', FILTER_SANITIZE_EMAIL);
+// Validation function
+function validateField($value, $fieldName) {
+    if (empty(trim($value))) {
+        return "$fieldName is required";
+    }
+    return null;
+}
 
-    // Validate required fields
-    if (empty($student_number)) $errors[] = "Student number is required";
-    if (empty($college)) $errors[] = "College is required";
-    if (empty($course)) $errors[] = "Course is required";
-    if (empty($registration_date)) $errors[] = "Registration date is required";
-    if (empty($first_name)) $errors[] = "First name is required";
-    if (empty($last_name)) $errors[] = "Last name is required";
-    if (empty($birthday)) $errors[] = "Birthday is required";
-    if (empty($sex)) $errors[] = "Sex is required";
-    if (empty($main_email)) $errors[] = "Main email is required";
-    if (empty($house_number) || empty($street) || empty($city) || empty($province) || empty($country) || empty($zip_code)) {
-        $errors[] = "All address fields are required";
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    $requiredFields = [
+        'card_number' => 'Student Number',
+        'college' => 'College',
+        'course' => 'Course',
+        'registration_date' => 'Registration Date',
+        'first_name' => 'First Name',
+        'last_name' => 'Last Name',
+        'birthday' => 'Birthday',
+        'Sex' => 'Sex',
+        'email' => 'Main Email',
+        'house_number' => 'House Number',
+        'street' => 'Street',
+        'city' => 'City',
+        'province' => 'Province',
+        'country' => 'Country',
+        'zip' => 'Zip Code'
+    ];
+
+    $formData = [];
+    foreach ($requiredFields as $field => $label) {
+        $value = filter_input(INPUT_POST, $field);
+        $formData[$field] = $value;
+
+        $error = validateField($value, $label);
+        if ($error) {
+            $errors[] = $error;
+        }
     }
 
+    if (!empty($formData['email']) && !filter_var($formData['email'], FILTER_VALIDATE_EMAIL)) {
+        $errors[] = "Invalid email format";
+    }
+
+    $address = implode(", ", array_filter([
+        $formData['house_number'],
+        $formData['street'],
+        $formData['city'],
+        $formData['province'],
+        $formData['country'],
+        $formData['zip']
+    ]));
+
+    // If no errors, set success message
     if (empty($errors)) {
-        // If no errors, set success message
         $success_message = "Registration successful!";
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -88,7 +89,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                     <?php endif; ?>
                     
-                    <!-- Display success message if form is successfully submitted -->
                     <?php if (!empty($success_message)): ?>
                         <div class="alert alert-success">
                             <?php echo htmlspecialchars($success_message); ?>
